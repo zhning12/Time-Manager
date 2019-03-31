@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                111111
 
                 showCustomizeDialog();
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
