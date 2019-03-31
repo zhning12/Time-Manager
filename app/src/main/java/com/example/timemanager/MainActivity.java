@@ -15,11 +15,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.EditText;
+
+import android.view.ViewStub;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    String[] p_num;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +37,12 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showCustomizeDialog();
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
@@ -53,12 +64,19 @@ private void showCustomizeDialog() {
      * 由于dialog_customize.xml只放置了一个EditView，因此和图8一样
      * dialog_customize.xml可自定义更复杂的View
      */
+
     AlertDialog.Builder customizeDialog =
             new AlertDialog.Builder(MainActivity.this);
+
     final View dialogView = LayoutInflater.from(MainActivity.this)
             .inflate(R.layout.add_task_dialog,null);
+
     customizeDialog.setTitle("Add a new task");
     customizeDialog.setView(dialogView);
+
+
+    p_num = getResources().getStringArray(R.array.pomodoronum);
+
     customizeDialog.setPositiveButton("OK",
             new DialogInterface.OnClickListener() {
                 @Override
@@ -77,8 +95,30 @@ private void showCustomizeDialog() {
                     //...To-do
                 }
             });
+
     customizeDialog.show();
 }
+
+
+
+//    Spinner pSpinner = (Spinner) findViewById(R.id.pomodoro_num);
+//    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, p_num);
+//    pSpinner.setAdapter(adapter);
+//    pSpinner.setOnItemSelectedListener(
+//            new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> arg0,
+//                                           View arg1, int arg2, long arg3) {
+//                    int index = arg0.getSelectedItemPosition();
+//                    Toast.makeText(getBaseContext(),
+//                            "You have selected item : " + p_num[index], Toast.LENGTH_LONG).show();
+//                }
+//                @Override
+//                public void onNothingSelected(AdapterView<?> arg0) {
+//                }
+//            });
+
+
 
 
     @Override
@@ -113,7 +153,7 @@ private void showCustomizeDialog() {
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.

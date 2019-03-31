@@ -95,7 +95,6 @@ public class SqliteDbManager {
             while (rawQuery.moveToNext()) {
                 String date = rawQuery.getString(rawQuery.getColumnIndex("TIMESTAMP"));
                 String subSentences[] = date.split("-");
-                allDate.add(CalendarDay.from(Integer.parseInt(subSentences[0]), Integer.parseInt(subSentences[1]), Integer.parseInt(subSentences[2])));
             }
             rawQuery.close();
         }
