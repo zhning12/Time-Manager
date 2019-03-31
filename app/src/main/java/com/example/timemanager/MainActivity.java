@@ -1,10 +1,15 @@
 package com.example.timemanager;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,13 +27,25 @@ import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
     String[] p_num;
+    SqliteDbManager todoDb;
+    private List<Map<String, Object>> dataList;
+    private SimpleAdapter simpleAdapter;
+    ArrayList<ToDoList> allTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +54,34 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        allTask = new ArrayList<>();
+
+        todoDb = SqliteDbManager.getInstance();
+        todoDb.setSqliteDbOpen(this);
+        allTask = todoDb.getAll();
+
+        ListView listView = (ListView) this.findViewById(R.id.listView);
+
+        dataList = new ArrayList<Map<String, Object>>();
+        simpleAdapter = new SimpleAdapter(this, getData(), R.layout.item, new String[]{"taskName", "totalClock","finished"}, new int[]{R.id.checkBox, R.id.totalClock,R.id.finished});
+
+        // 3. 视图加载适配器
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setAdapter(simpleAdapter);
+
+//        listView.setOnItemClickListener(new ItemClickListener());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                showCustomizeDialog();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), AddTask.class);
+                Bundle bundle = new Bundle();
+//                bundle.putString("height", height);
+//                bundle.putString("weight", weight);
+                intent.putExtras(bundle);
+                startActivity(intent);
+//                showCustomizeDialog();
             }
         });
 
@@ -58,47 +94,60 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-//dialog
-private void showCustomizeDialog() {
-    /* @setView 装入自定义View ==> R.layout.dialog_customize
-     * 由于dialog_customize.xml只放置了一个EditView，因此和图8一样
-     * dialog_customize.xml可自定义更复杂的View
-     */
 
-    AlertDialog.Builder customizeDialog =
-            new AlertDialog.Builder(MainActivity.this);
+    private List<Map<String, Object>> getData() {
+        // 创建数据
+        for (ToDoList task : allTask) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("taskName", task.taskName);
+            map.put("totalClock", task.clockNum);
+            map.put("finished", task.finished);
 
-    final View dialogView = LayoutInflater.from(MainActivity.this)
-            .inflate(R.layout.add_task_dialog,null);
+            dataList.add(map);
+        }
+        return dataList;
+    }
 
-    customizeDialog.setTitle("Add a new task");
-    customizeDialog.setView(dialogView);
+    //dialog
+    private void showCustomizeDialog() {
+        /* @setView 装入自定义View ==> R.layout.dialog_customize
+         * 由于dialog_customize.xml只放置了一个EditView，因此和图8一样
+         * dialog_customize.xml可自定义更复杂的View
+         */
+
+        AlertDialog.Builder customizeDialog =
+                new AlertDialog.Builder(MainActivity.this);
+
+        final View dialogView = LayoutInflater.from(MainActivity.this)
+                .inflate(R.layout.add_task_dialog, null);
+
+        customizeDialog.setTitle("Add a new task");
+        customizeDialog.setView(dialogView);
 
 
-    p_num = getResources().getStringArray(R.array.pomodoronum);
+        p_num = getResources().getStringArray(R.array.pomodoronum);
 
-    customizeDialog.setPositiveButton("OK",
-            new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // 获取EditView中的输入内容
-                    EditText edit_text = (EditText) dialogView.findViewById(R.id.et_new_task_name);
-                    Toast.makeText(MainActivity.this,
-                            edit_text.getText().toString(),
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-    customizeDialog.setNegativeButton("CANCEL",
-            new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //...To-do
-                }
-            });
+        customizeDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 获取EditView中的输入内容
+                        EditText edit_text = (EditText) dialogView.findViewById(R.id.et_new_task_name);
+                        Toast.makeText(MainActivity.this,
+                                edit_text.getText().toString(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+        customizeDialog.setNegativeButton("CANCEL",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                    }
+                });
 
-    customizeDialog.show();
-}
-
+        customizeDialog.show();
+    }
 
 
 //    Spinner pSpinner = (Spinner) findViewById(R.id.pomodoro_num);
@@ -117,8 +166,6 @@ private void showCustomizeDialog() {
 //                public void onNothingSelected(AdapterView<?> arg0) {
 //                }
 //            });
-
-
 
 
     @Override

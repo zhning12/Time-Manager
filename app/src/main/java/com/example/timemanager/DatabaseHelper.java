@@ -8,10 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "BMI.db";
-    public static final String TABLE_NAME = "bmi_table";
-    public static final String COL_2 = "BMI";
-    public static final String COL_3 = "TIMESTAMP";
+    public static final String DATABASE_NAME = "TODO.db";
+    public static final String TABLE_NAME = "todo_table";
+    public static final String COL_2 = "TASKNAME";
+    public static final String COL_3 = "CLOCK";
+    public static final String COL_4 = "FINISHED";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1); // super(context, name, factor, version)}
@@ -19,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,BMI INTERGER, TIMESTAMP TEXT) ");
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,TASKNAME TEXT,CLOCK INTERGER, FINISHED INTERGER) ");
     }
 
     @Override
@@ -29,11 +30,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Method to insert a record to the database
-    public boolean insertData(String bmiData, String timestamp) {
+    public boolean insertData(String taskName, int clock) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2, bmiData);
-        contentValues.put(COL_3, timestamp);
+        contentValues.put(COL_2, taskName);
+        contentValues.put(COL_3, clock);
+        contentValues.put(COL_4, 0);
+
         long result = db.insert(TABLE_NAME, null, contentValues);
         if (result == -1)
             return false;
@@ -49,20 +52,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 // Method to update a record
-
-    public boolean updateData(String bmiData, String timestamp) {
+    public boolean updateData(String taskName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2, bmiData);
-        contentValues.put(COL_3, timestamp);
-        db.update(TABLE_NAME, contentValues, "COL_3 = ?", new String[]{timestamp});
+        contentValues.put(COL_2, taskName);
+        contentValues.put(COL_3, COL_3+1);
+        db.update(TABLE_NAME, contentValues, "COL_2 = ?", new String[]{taskName});
         return true;
     }
 
     // Method to delete a record
-    public Integer deleteData(String id) {
+    public Integer deleteData(String taskName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "ID = ?", new String[]{id});
+        return db.delete(TABLE_NAME, "COL_2 = ?", new String[]{taskName});
     }
 
 }

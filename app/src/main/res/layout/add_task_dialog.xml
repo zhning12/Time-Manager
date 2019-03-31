@@ -56,18 +56,19 @@
         android:layout_marginLeft="15dp"
         android:paddingTop="20dp"
         android:paddingBottom="10dp">
-    <TextView
-        android:id="@+id/tv_pomodor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pomodoro"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
-    <Spinner
-        android:id="@+id/pomodoro_num"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </Spinner>
+        <TextView
+            android:id="@+id/tv_pomodor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pomodoro"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+        <Spinner
+            android:id="@+id/pomodoro_num"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="200dp">
+        </Spinner>
     </RelativeLayout>
 
     <View
@@ -140,5 +141,12 @@
             android:textStyle="italic" />
 
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/addBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
 
 </LinearLayout>

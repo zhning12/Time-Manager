@@ -18,6 +18,7 @@ public class SqliteDbManager {
     String tbName = DatabaseHelper.TABLE_NAME;
     String col2 = DatabaseHelper.COL_2;
     String col3 = DatabaseHelper.COL_3;
+    String col4 = DatabaseHelper.COL_4;
 
     public static SqliteDbManager getInstance() {
         if (mInstance == null) {
@@ -31,32 +32,32 @@ public class SqliteDbManager {
         mDb = mDbHelper.getWritableDatabase();
     }
 
-    public void insertTb(String bmi, String datestamp) {
+    public void insertTb(String taskName, int clock) {
         openDb();
         //方法一：
-        Log.w("我进来了", "I am queryTb");
+        Log.w("番茄钟 存入数据库", String.valueOf(clock));
         ContentValues contentValues = new ContentValues();
-        contentValues.put(col2, bmi);
-        contentValues.put(col3, datestamp);
+        contentValues.put(col2, taskName);
+        contentValues.put(col3, clock);
+        contentValues.put(col4, 0);
         mDb.insert(tbName, null, contentValues);
         closeDb();
     }
 
-
-    public void updateTb(String tbName) {
+    public void updateTb(String taskName) {
         openDb();
         //方法一：
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", "隔壁老王");
-        contentValues.put("sex", "男");
-        mDb.update(tbName, contentValues, "name=?", new String[]{"王五"});
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put("name", "隔壁老王");
+//        contentValues.put("sex", "男");
+//        mDb.update(tbName, contentValues, "name=?", new String[]{"王五"});
         //方法二：
-        mDb.execSQL("update " + tbName + " set name = '哈利波特',age = '16' where name = '哈利'");
+        mDb.execSQL("update " + tbName + " set " + col4 + " = " + col4 + "+ 1 where " + col2 + " = " + taskName);
         closeDb();
     }
 
-    public List<String> queryTb(String datestamp,String resultMes) {
+    public List<String> queryTb(String datestamp, String resultMes) {
         openDb();
         //方法一：
 //        Log.w("我进来了","I am queryTb");
@@ -87,21 +88,32 @@ public class SqliteDbManager {
         return myList;
     }
 
-    public Collection getAll() {
+    public ArrayList<ToDoList> getAll() {
         openDb();
-        Collection allDate = new ArrayList<>();
+        Log.w("开始执行getall","执行啦啦啦啦啦啦");
+        ArrayList<ToDoList> allTask = new ArrayList<>();
         Cursor rawQuery = mDb.rawQuery("select * from " + tbName, null);
         if (null != rawQuery) {
             while (rawQuery.moveToNext()) {
-                String date = rawQuery.getString(rawQuery.getColumnIndex("TIMESTAMP"));
-                String subSentences[] = date.split("-");
+                ToDoList task = new ToDoList();
+                task.taskName = rawQuery.getString(rawQuery.getColumnIndex(col2));
+                task.clockNum = rawQuery.getInt(rawQuery.getColumnIndex(col3));
+                task.finished = rawQuery.getInt(rawQuery.getColumnIndex(col4));
+                allTask.add(task);
             }
             rawQuery.close();
         }
         closeDb();
-        return allDate;
+        Log.w("开始打印第一个task",allTask.get(0).taskName);
+
+        return allTask;
     }
 
+    public Cursor getAllData() {
+        openDb();
+        Cursor res = mDb.rawQuery("select * from " + tbName, null);
+        return res;
+    }
     /**
      * 创建或打开一个可以读的数据库
      */
